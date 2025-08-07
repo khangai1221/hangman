@@ -10,28 +10,7 @@ timerDisplay.id = "timerDisplay";
 timerDisplay.className = "timer";
 container.appendChild(timerDisplay);
 
-const gameWords = [
-  "cat",
-  "dog",
-  "sun",
-  "car",
-  "hat",
-  "pen",
-  "bat",
-  "cup",
-  "book",
-  "fish",
-  "milk",
-  "star",
-  "ball",
-  "tree",
-  "frog",
-  "duck",
-  "cake",
-  "bird",
-  "king",
-  "rain",
-];
+const gameWords = ["cat", "dog"];
 
 const image = document.createElement("img");
 image.src = "./hangman0.svg";
@@ -41,13 +20,9 @@ const blankWord = document.createElement("p");
 blankWord.className = "title";
 container.appendChild(blankWord);
 
-const input = document.createElement("input");
-input.type = "text";
-input.placeholder = "Enter a letter";
-input.className = "input";
-input.maxLength = 1;
-input.style.display = "none";
-container.appendChild(input);
+const keyboard = document.createElement("div");
+keyboard.className = "keyboard";
+container.appendChild(keyboard);
 
 const startButton = document.createElement("button");
 startButton.textContent = "Start";
@@ -66,15 +41,12 @@ function startGame() {
   clearInterval(timerInterval);
   wrongClick = 0;
   startButton.disabled = true;
-  startButton.textContent = "Start";
-  input.disabled = false;
-  input.value = "";
-  input.style.display = "inline";
-
   selectedWord = gameWords[Math.floor(Math.random() * gameWords.length)];
   displayWord = Array(selectedWord.length).fill("_");
   blankWord.textContent = displayWord.join(" ");
   image.src = "./hangman0.svg";
+
+  createKeyboard();
 
   let timeLeft = totalTime;
   timerDisplay.textContent = `Time Left: ${timeLeft}s`;
@@ -85,18 +57,47 @@ function startGame() {
 
     if (timeLeft <= 0) {
       clearInterval(timerInterval);
-      input.disabled = true;
-      input.style.display = "none";
+      disableKeyboard();
       timerDisplay.textContent = "Time's up!";
+      blankWord.textContent = selectedWord.split("").join(" ");
       startButton.disabled = false;
       startButton.textContent = "Play Again";
     }
   }, 1000);
 }
 
-input.addEventListener("keyup", () => {
-  const letter = input.value.toLowerCase();
-  input.value = "";
+function createKeyboard() {
+  const rows = [
+    "QWERTYUIOP".split(""),
+    "ASDFGHJKL".split(""),
+    "ZXCVBNM".split(""),
+  ];
+
+  keyboard.innerHTML = "";
+
+  rows.forEach((row) => {
+    const rowDiv = document.createElement("div");
+    rowDiv.className = "keyboard-row";
+
+    row.forEach((key) => {
+      const button = document.createElement("button");
+      button.textContent = key;
+      button.className = "key";
+      button.onclick = () => handleGuess(key.toLowerCase());
+      rowDiv.appendChild(button);
+    });
+
+    keyboard.appendChild(rowDiv);
+  });
+}
+
+function handleGuess(letter) {
+  const buttons = document.querySelectorAll(".key");
+  buttons.forEach((btn) => {
+    if (btn.textContent.toLowerCase() === letter) {
+      btn.disabled = true;
+    }
+  });
 
   if (selectedWord.includes(letter)) {
     for (let i = 0; i < selectedWord.length; i++) {
@@ -110,8 +111,7 @@ input.addEventListener("keyup", () => {
     if (!displayWord.includes("_")) {
       clearInterval(timerInterval);
       timerDisplay.textContent = "You win!";
-      input.disabled = true;
-      input.style.display = "none";
+      disableKeyboard();
       startButton.disabled = false;
       startButton.textContent = "Play Again";
     }
@@ -125,10 +125,14 @@ input.addEventListener("keyup", () => {
       clearInterval(timerInterval);
       blankWord.textContent = selectedWord.split("").join(" ");
       timerDisplay.textContent = "Game Over!";
-      input.disabled = true;
-      input.style.display = "none";
+      disableKeyboard();
       startButton.disabled = false;
       startButton.textContent = "Play Again";
     }
   }
-});
+}
+
+function disableKeyboard() {
+  const buttons = document.querySelectorAll(".key");
+  buttons.forEach((btn) => (btn.disabled = true));
+}
