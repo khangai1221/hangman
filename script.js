@@ -9,8 +9,16 @@ const timerDisplay = document.createElement("div");
 timerDisplay.id = "timerDisplay";
 timerDisplay.className = "timer";
 container.appendChild(timerDisplay);
+const gameWords = [
+  "cat", "dog", "fish", "bird", "cow", "pig", "lion", "tiger", "bear", "horse",
+  "apple", "banana", "grape", "orange", "peach", "cherry", "lemon", "mango",
+  "car", "bus", "train", "plane", "boat", "truck", "bike",
+  "hat", "shoe", "sock", "shirt", "pants", "coat", "scarf",
+  "red", "blue", "green", "yellow", "pink", "black", "white",
+  "sun", "moon", "star", "cloud", "rain", "snow", "wind",
+  "ball", "game", "doll", "lego", "toy", "book", "pen", "bag"
+];
 
-const gameWords = ["cat", "dog"];
 
 const image = document.createElement("img");
 image.src = "./hangman0.svg";
